@@ -10,10 +10,10 @@ There’s no timer, no stress — just you, a bar, and a few squares.
 
 ## How to Play
 
-* You control a **horizontal bar**
-* **Catch the red square** with the bar to gain **+1 point**
-* **Avoid the yellow squares** — touching them ends the game
-* If you lose, you can **restart instantly**
+* You control a horizontal bar
+* Catch the red squares with the bar to gain +1 point
+* Avoid the yellow squares — touching them ends the game
+* If you lose, you can restart instantly
 * No time limits. No levels. Just flow.
 
 The game is intentionally built to be **relaxing**, not competitive.
@@ -39,12 +39,12 @@ Think of it as a **tiny arcade loop you can play to unwind**.
 * **Backend:** Flask (Python)
 * **Deployment:** Render
 
-> Originally prototyped in **pygame**, then translated into a **web-based JavaScript version** while keeping the core mechanics intact.
+> Originally prototyped in pygame, then translated into a **web-based JavaScript version** while keeping the core mechanics intact.
 
 ---
 
 ## Project Structure
-
+```
 Catch-Squared/
 ├── pycode/
 │   └── app.py          # Flask server
@@ -59,7 +59,7 @@ Catch-Squared/
 │       └── sound.wav
 ├── requirements.txt
 └── README.md
-
+```
 ---
 
 ## 🚀 Run Locally
