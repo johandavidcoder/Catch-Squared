@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQUARE CATCHER | Terminal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-animation"></div>
+    <audio id="bgm" loop>
+        <source src="{{ url_for('static', filename='audio/music.wav') }}" type="audio/wav">
+    </audio>
+
+    <div class="container">
+        <header>
+            <div class="logo">SQUARE<span>CATCHER</span></div>
+            <div class="status-indicator">
+                <span class="dot"></span> SYSTEM ONLINE
+            </div>
+        </header>
+
+        <main>
+            <div class="hero">
+                <h1>Catch²</h1>
+                <p>Arcade Protocol v3.0</p>
+
+                <div id="setupView">
+                    <div class="controls-hint">
+                        <div class="control"><span>←/A</span> LEFT</div>
+                        <div class="control"><span>→/D</span> RIGHT</div>
+                    </div>
+
+                    <div class="action-zone">
+                        <button id="launchBtn" class="launch-button">
+                            <span class="btn-text">INITIALIZE CORE</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="gameView" class="game-container">
+                    <canvas id="gameCanvas"></canvas>
+                    <div id="canvasOverlay" class="canvas-overlay">
+                        <h2 id="overlayTitle">GAME OVER</h2>
+                        <button id="restartBtn" class="launch-button" style="margin-top: 20px; scale: 0.8;">
+                            <span class="btn-text">RESTART</span>
+                        </button>
+                        <p style="font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 10px;">PRESS 'R' TO
+                            RESTART</p>
+                    </div>
+                </div>
+
+                <div id="feedback" class="feedback-msg"></div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-line"></div>
+            <p>&copy; 2026 ARCADE SYSTEMS</p>
+        </footer>
+    </div>
+
+    <script>
+        const setupView = document.getElementById('setupView');
+        const gameView = document.getElementById('gameView');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const launchBtn = document.getElementById('launchBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const overlay = document.getElementById('canvasOverlay');
+
+        // Game Constants
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 400;
+        const PLAYER_WIDTH = 120;
+        const PLAYER_HEIGHT = 15;
+        const ITEM_SIZE = 30;
+        const PLAYER_COLOR = '#00f5ff';
+        const GOOD_COLOR = '#ff2e63';
+        const BAD_COLOR = '#ff9f43';
+
+        // Game State
+        let playerX = CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2;
+        let score = 0;
+        let items = [];
+        let gameRunning = false;
+        let animationId;
+        const keys = {};
+
+        // Initialize Canvas
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+
+        function startGame() {
+            const bgm = document.getElementById('bgm');
+            bgm.play().catch(e => console.log("Audio play blocked by browser."));
+
+            setupView.style.display = 'none';
+            gameView.style.display = 'block';
+            overlay.style.display = 'none';
+            playerX = CANVAS_WIDTH / 2 - PLAYER_WIDTH / 2;
+            score = 0;
+            items = [];
+            gameRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        launchBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+
+        window.addEventListener('keydown', e => {
+            keys[e.key] = true;
+            if ((e.key === 'r' || e.key === 'R') && !gameRunning && overlay.style.display === 'flex') {
+                startGame();
+            }
+        });
+        window.addEventListener('keyup', e => keys[e.key] = false);
+
+        function drawPlayer() {
+            ctx.fillStyle = PLAYER_COLOR;
+            // Rounded rect
+            ctx.beginPath();
+            ctx.roundRect(playerX, CANVAS_HEIGHT - 40, PLAYER_WIDTH, PLAYER_HEIGHT, 8);
+            ctx.fill();
+        }
+
+        function spawnItem() {
+            if (Math.random() < 0.03) {
+                const type = Math.random() > 0.4 ? 'good' : 'bad';
+                items.push({
+                    x: Math.random() * (CANVAS_WIDTH - ITEM_SIZE),
+                    y: -ITEM_SIZE,
+                    type: type,
+                    speed: 4 + Math.random() * 2
+                });
+            }
+        }
+
+        function updateItems() {
+            for (let i = items.length - 1; i >= 0; i--) {
+                const item = items[i];
+                item.y += item.speed;
+
+                // Collision
+                const playerY = CANVAS_HEIGHT - 40;
+                if (item.y + ITEM_SIZE > playerY &&
+                    item.y < playerY + PLAYER_HEIGHT &&
+                    item.x + ITEM_SIZE > playerX &&
+                    item.x < playerX + PLAYER_WIDTH) {
+
+                    if (item.type === 'good') {
+                        score++;
+                        items.splice(i, 1);
+                    } else {
+                        gameOver();
+                    }
+                } else if (item.y > CANVAS_HEIGHT) {
+                    items.splice(i, 1);
+                }
+            }
+        }
+
+        function drawItems() {
+            items.forEach(item => {
+                ctx.fillStyle = item.type === 'good' ? GOOD_COLOR : BAD_COLOR;
+                ctx.beginPath();
+                ctx.roundRect(item.x, item.y, ITEM_SIZE, ITEM_SIZE, 6);
+                ctx.fill();
+            });
+        }
+
+        function drawUI() {
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Orbitron';
+            ctx.fillText(`SCORE: ${score}`, 20, 35);
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            cancelAnimationFrame(animationId);
+            overlay.style.display = 'flex';
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            // Clear
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // Player Movement
+            if ((keys['ArrowLeft'] || keys['a']) && playerX > 0) playerX -= 10;
+            if ((keys['ArrowRight'] || keys['d']) && playerX < CANVAS_WIDTH - PLAYER_WIDTH) playerX += 10;
+
+            spawnItem();
+            updateItems();
+            drawPlayer();
+            drawItems();
+            drawUI();
+
+            animationId = requestAnimationFrame(gameLoop);
+        }
+    </script>
+</body>
+
+</html>
