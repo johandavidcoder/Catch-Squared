@@ -1,1 +1,3 @@
-web: gunicorn --pythonpath pycode app:app
+web: gunicorn pycode.app:app
+
+
