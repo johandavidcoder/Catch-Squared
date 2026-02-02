@@ -8,7 +8,7 @@ There’s no timer, no stress — just you, a bar, and a few squares.
 
 ---
 
-## 🕹️ How to Play
+## How to Play
 
 * You control a **horizontal bar**
 * **Catch the red square** with the bar to gain **+1 point**
@@ -20,7 +20,7 @@ The game is intentionally built to be **relaxing**, not competitive.
 
 ---
 
-## 🎮 Game Philosophy
+## Game Philosophy
 
 Catch² isn’t about winning fast — it’s about:
 
@@ -33,7 +33,7 @@ Think of it as a **tiny arcade loop you can play to unwind**.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Frontend:** HTML, CSS, JavaScript
 * **Backend:** Flask (Python)
@@ -43,9 +43,8 @@ Think of it as a **tiny arcade loop you can play to unwind**.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```
 Catch-Squared/
 ├── pycode/
 │   └── app.py          # Flask server
@@ -60,7 +59,6 @@ Catch-Squared/
 │       └── sound.wav
 ├── requirements.txt
 └── README.md
-```
 
 ---
 
@@ -81,16 +79,16 @@ http://localhost:5001
 
 ---
 
-## 🌱 Possible Future Ideas
+## Possible Future Ideas
 
 * Difficulty scaling over time
 * Subtle visual effects
 * Mobile-friendly controls
-* High score memory (local)
+* High score memory
 
 ---
 
-## 👤 Author
+## Author
 
 **Johan David**
 GitHub: [https://github.com/johandavidcoder](https://github.com/johandavidcoder)
